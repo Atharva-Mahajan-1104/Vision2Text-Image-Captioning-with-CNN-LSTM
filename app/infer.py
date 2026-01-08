@@ -26,9 +26,15 @@ def main():
     ap.add_argument("--max-len", type=int, default=20)
     args = ap.parse_args()
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    ckpt = torch.load(args.checkpoint, map_location=device)
-    vocab = load_vocab(args.vocab)
+   # Select GPU if available, otherwise fall back to CPU
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+# Load the trained model checkpoint onto the selected device
+ckpt = torch.load(args.checkpoint, map_location=device)
+
+# Load the saved vocabulary used during training
+vocab = load_vocab(args.vocab)
+
 
     enc = EncoderCNN(embed_dim=ckpt["embed_dim"]).to(device)
     dec = DecoderLSTM(vocab_size=ckpt["vocab_size"], embed_dim=ckpt["embed_dim"], hidden_dim=ckpt["hidden_dim"]).to(device)
